@@ -11,7 +11,7 @@ class BookingRepository:
 
     # Publika metoder.
     def get_all(self):  # metod som hämtar alla bokningar från fil och returnerar bookings-dict.
-        self.load_bookings_from_file()
+        #self.load_bookings_from_file()
         return self.__bookings_dict
 
     # Metod för att söka efter bokningar baserat på datum från användaren.
@@ -36,6 +36,7 @@ class BookingRepository:
         self.save_dict_to_json_file()  # sparar ner till json fil för att ny bokning ska sparas.
 
     # Metod för att kontrollera om bokning med datum, tid och frisör redan finns.
+
     def search_if_booking_exists(self, date, time, hairdresser):
         # Går igenom bokningar i dicten. Om bokning redan finns med det datum, tid och frisör, returneras True.
         for email, booking in self.__bookings_dict.items():
@@ -44,9 +45,15 @@ class BookingRepository:
 
         return False  # om bokning inte finns, returneras False.
 
+
     def delete_booking(self, email):  # Metod för att ta bort bokning baserat på emailadress.
-        self.__bookings_dict.pop(email)  # Använder pop metoden för att ta bort bokning.
-        self.save_dict_to_json_file()  # anropar metoden för att spara ned ändringen..
+        if email in self.__bookings_dict:
+            print(f"Deleting booking: {self.__bookings_dict[email]}") #TA BORT SEN. 
+            self.__bookings_dict.pop(email)  # Använder pop metoden för att ta bort bokning.
+            self.save_dict_to_json_file()  # anropar metoden för att spara ned ändringen..
+            return True
+        print("No booking found to delete..")
+        return False 
 
     def load_bookings_from_file(self):  # Metod för att läsa in bokningar från json-fil.
         try:
