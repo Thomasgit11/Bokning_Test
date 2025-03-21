@@ -107,6 +107,11 @@ class TreeViewBooking:
         found_bookings = self.booking_manager.search_by_date(selected_date)
 
         self.__clear_treeview()
+
+        if not found_bookings:
+            messagebox.showinfo("Inga bokningar ", "Det finns inga bokningar för det valda datumet. ")
+            return
+
         for booking in found_bookings.values():
             self.tree.insert('', tk.END, values=(booking['email'], booking['date'], booking['time'],
                                                  booking['name'], booking['service'], booking['hairdresser']))
