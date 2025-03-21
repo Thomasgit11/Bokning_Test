@@ -47,12 +47,10 @@ class BookingRepository:
 
 
     def delete_booking(self, email):  # Metod för att ta bort bokning baserat på emailadress.
-        if email in self.__bookings_dict:
-            print(f"Deleting booking: {self.__bookings_dict[email]}") #TA BORT SEN. 
+        if email in self.__bookings_dict: 
             self.__bookings_dict.pop(email)  # Använder pop metoden för att ta bort bokning.
             self.save_dict_to_json_file()  # anropar metoden för att spara ned ändringen..
             return True
-        print("No booking found to delete..")
         return False 
 
     def load_bookings_from_file(self):  # Metod för att läsa in bokningar från json-fil.

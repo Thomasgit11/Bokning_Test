@@ -7,14 +7,6 @@
         "service": "Klippning l\u00e5ngt h\u00e5r",
         "hairdresser": "Hannah"
     },
-    "test@test.com": {
-        "email": "test@test.com",
-        "date": "2025-06-22",
-        "time": "13:00",
-        "name": "testare",
-        "service": "Klippning kort h\u00e5r",
-        "hairdresser": "Hannah"
-    },
     "kalle@test.com": {
         "email": "kalle@test.com",
         "date": "2025-03-25",
