@@ -14,10 +14,11 @@ class BookingManager:
         return False  # Bokningen fanns redan
 
     def delete_booking(self, email):
-        self.repo.delete_booking(email)
+        return self.repo.delete_booking(email)
 
     def get_all_bookings(self):
         return self.repo.get_all()
 
     def search_by_date(self, date):
         return self.repo.search_date(date)
+    
