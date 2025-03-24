@@ -96,6 +96,11 @@ class TreeViewBooking:
         # hämta data från entry textfält och listbox för att lägga till bokning.
         email, date, time, name, service, hairdresser = self.__get_booking_values()
         # lägg till i fil, anropa bookingmanager.
+            # Kontrollera att inga fält är tomma
+        if not all([email, date, time, name, service, hairdresser]):
+            messagebox.showerror("Fel", "Alla fält måste fyllas i för att kunna boka.")
+            return
+
         if self.booking_manager.add_booking(email, date, time, name, service, hairdresser):
             self.tree.insert("", index=0, values=[email, date, time, name, service, hairdresser])
         else:

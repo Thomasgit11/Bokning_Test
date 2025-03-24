@@ -148,5 +148,125 @@ class TestBookingManager(unittest.TestCase):
         result = self.manager.delete_booking("nonexistent@example.com")
         self.assertFalse(result)  #Kontrollera att resultatet är False. 
 
+class TestUserStory1(unittest.TestCase):
+    def setUp(self):
+        """Skapar en testinstans av BookingManager med mockat repo."""
+        from BookingManager import BookingManager
+        self.manager = BookingManager("test_bookings.json")
+        self.manager.repo = MagicMock()  # Mocka repository för att isolera testerna
+
+    def test_successful_booking(self):
+        """Testar att bokning lyckas när tid och frisör är lediga."""
+        self.manager.repo.search_if_booking_exists.return_value = False  # Simulera en ledig tid
+
+        # Anropa add_booking med test
+        result = self.manager.add_booking(
+            "test@example.com", "2025-04-10", "11:00", "Test Testsson", "Klippning", "Peter"
+        )
+
+        self.assertTrue(result)  # kolla att bokningen blir godkännd
+        self.manager.repo.add_booking.assert_called_once()  # Kolla att sparning anropas
+
+    def test_booking_saves_to_json(self):
+        """Testar att bokningen skickas vidare till repository för att sparas."""
+        self.manager.repo.search_if_booking_exists.return_value = False
+        self.manager.repo.add_booking = MagicMock()  # Mocka spara-funktion
+
+        # Skapa bokning
+        self.manager.add_booking(
+            "email@test.com", "2025-04-11", "12:00", "Namn Test", "Klippning", "Sara"
+        )
+
+        self.manager.repo.add_booking.assert_called_once()  # Kolla att spara anropades
+
+    def test_add_and_retrieve_booking(self):
+        """Integrations, lägg till bokning och hämta den via get_all_bookings."""
+        from BookingRepository import BookingRepository
+        repo = BookingRepository("test_bookings.json")
+        repo._BookingRepository__bookings_dict = {}  # tom bokningslista
+        repo.save_dict_to_json_file = MagicMock()  # Mocka en filskrivning
+
+        manager = BookingManager("test_bookings.json")
+        manager.repo = repo  # Använd mockat repository
+
+        result = manager.add_booking("anna@example.com", "2025-04-12", "13:00", "Anna", "Klippning långt hår", "Hannah")
+        self.assertTrue(result)  # Kolla att bokningen går igenom
+
+        bookings = manager.get_all_bookings()
+        self.assertIn("anna@example.com", bookings)  # Kolla om bokningen går att hämta
+
+
+class TestUserStory3(unittest.TestCase):
+    def setUp(self):
+        """Skapar en testinstans av BookingManager med mockad repository."""
+        from BookingManager import BookingManager
+        self.manager = BookingManager("test_bookings.json")
+        self.manager.repo = MagicMock()  # Mocka repository för att isolera testerna
+
+    def test_detect_existing_booking(self):
+        """Testar att systemet identifierar en redan existerande bokning"""
+        from BookingRepository import BookingRepository
+        repo = BookingRepository("test_bookings.json")
+        repo._BookingRepository__bookings_dict = {  # Skapa  en befintlig bokning
+            "existing@example.com": {
+                "email": "existing@example.com",
+                "date": "2025-04-15",
+                "time": "10:00",
+                "name": "Test",
+                "service": "Klippning",
+                "hairdresser": "Peter"
+            }
+        }
+
+        # Anropa search_if_booking_exists
+        exists = repo.search_if_booking_exists("2025-04-15", "10:00", "Peter")
+        self.assertTrue(exists)  # Kolla ifall metoden hittar dubbelbokningen
+
+    def test_booking_denied_if_time_taken(self):
+        """Testar att en bokning nekas ifall tid och frisör är bokad"""
+        self.manager.repo.search_if_booking_exists.return_value = True  # Simulera att en tid är upptagen
+
+        result = self.manager.add_booking(
+            "double@example.com", "2025-04-15", "10:00", "Dubbel", "Klippning", "Peter"
+        )
+
+        self.assertFalse(result)  # Bokningen ska nekas
+        self.manager.repo.add_booking.assert_not_called()  # Sparning ska inte funka
+
+    def test_booking_allowed_with_other_hairdresser(self):
+        """Testar att samma tid kan bokas ifall annan frisör."""
+        self.manager.repo.search_if_booking_exists.return_value = False  # Simulera ledig tid
+
+        result = self.manager.add_booking(
+            "new@example.com", "2025-04-15", "10:00", "Ny Kund", "Färgning", "Sara"
+        )
+
+        self.assertTrue(result)  # Bokningen godkänns
+        self.manager.repo.add_booking.assert_called_once()  # Kolla att de sparas
+
+    def test_integration_deny_duplicate_booking(self):
+        """Integrations, kolla att bokningen nekas i hela flödet dubbelbokning."""
+        from BookingRepository import BookingRepository
+        repo = BookingRepository("test_bookings.json")
+        repo._BookingRepository__bookings_dict = {
+            "existing@example.com": {
+                "email": "existing@example.com",
+                "date": "2025-04-16",
+                "time": "10:00",
+                "name": "Test",
+                "service": "Klippning",
+                "hairdresser": "Peter"
+            }
+        }
+        repo.save_dict_to_json_file = MagicMock()  # Mocka filskrivning
+
+        manager = BookingManager("test_bookings.json")
+        manager.repo = repo
+
+        result = manager.add_booking("new@example.com", "2025-04-16", "10:00", "Ny", "Klippning", "Peter")
+        self.assertFalse(result)  # Bokningen ska nekas
+
+
+
 if __name__ == '__main__':
     unittest.main()

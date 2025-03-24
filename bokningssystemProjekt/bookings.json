@@ -14,5 +14,13 @@
         "name": "kalle",
         "service": "Klippning l\u00e5ngt h\u00e5r",
         "hairdresser": "Peter"
+    },
+    "thomas@gmail.com": {
+        "email": "thomas@gmail.com",
+        "date": "2025-20-01",
+        "time": "11:00",
+        "name": "Thomas",
+        "service": "Klippning kort h\u00e5r",
+        "hairdresser": "Peter"
     }
 }
