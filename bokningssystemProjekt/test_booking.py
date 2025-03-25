@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from BookingRepository import BookingRepository
 from BookingManager import BookingManager
 
-
+# Tester för Repository userstory 2 och 4. 
 class TestBookingRepository(unittest.TestCase):
     @patch("BookingRepository.BookingRepository.load_bookings_from_file")  # Mocka fil-läsning
     def setUp(self, mock_load_file):
@@ -105,7 +105,7 @@ class TestBookingRepository(unittest.TestCase):
         result = self.repo.delete_booking("nonexistent@example.com")
         self.assertFalse(result)  # Ska returnera False om bokningen inte finns
 
-#Tester för klassen BookingManager. 
+#Tester för klassen BookingManager - Userstory 2 och 4.
 class TestBookingManager(unittest.TestCase):
     def setUp(self):
         """Skapar en testinstans av BookingManager med en mockad BookingRepository."""
